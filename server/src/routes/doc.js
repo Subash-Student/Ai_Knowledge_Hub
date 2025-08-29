@@ -1,5 +1,6 @@
 import express from 'express';
 import { auth } from '../middleware/Auth.js';
+import { validateDocInput } from '../middleware/ValidateDoc.js';
 import {
   createDoc,
   getDocs,
@@ -12,16 +13,16 @@ import {
   getLatestActivities
 } from '../controllers/docController.js';
 
-const docRoutes = express.Router();
+const router = express.Router();
 
-docRoutes.post('/', auth, createDoc);
-docRoutes.get('/', auth, getDocs);
-docRoutes.get('/:id', auth, getDoc);
-docRoutes.put('/:id', auth, updateDoc);
-docRoutes.delete('/:id', auth, deleteDoc);
-docRoutes.post('/:id/summarize', auth, regenerateSummary);
-docRoutes.post('/:id/tags', auth, regenerateTags);
-docRoutes.get('/:id/versions', auth, getDocVersions);
-docRoutes.get('/activity/feed/latest', auth, getLatestActivities);
+router.post('/', auth, validateDocInput, createDoc);
+router.get('/', auth, getDocs);
+router.get('/:id', auth, getDoc);
+router.put('/:id', auth, validateDocInput, updateDoc);
+router.delete('/:id', auth, deleteDoc);
+router.post('/:id/summarize', auth, regenerateSummary);
+router.post('/:id/tags', auth, regenerateTags);
+router.get('/:id/versions', auth, getDocVersions);
+router.get('/activity/feed/latest', auth, getLatestActivities);
 
-export default docRoutes;
+export default router;
