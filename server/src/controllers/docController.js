@@ -82,7 +82,7 @@ export const updateDoc = async (req, res) => {
   try {
     const doc = await Doc.findById(req.params.id);
     if (!doc) return res.status(404).json({ success: false, message: 'Not found' });
-    if (!canEditOrDelete(req.user, doc)) return res.status(403).json({ success: false, message: 'Forbidden' });
+    if (!canEditOrDelete(req.user, doc)) return res.status(403).json({ success: false, message: 'Only Admin or Author Can Edit' });
 
     const { title, content, tags } = req.body;
     const hasChanges = title || content || tags;
@@ -118,7 +118,7 @@ export const deleteDoc = async (req, res) => {
   try {
     const doc = await Doc.findById(req.params.id);
     if (!doc) return res.status(404).json({ success: false, message: 'Not found' });
-    if (!canEditOrDelete(req.user, doc)) return res.status(403).json({ success: false, message: 'Forbidden' });
+    if (!canEditOrDelete(req.user, doc)) return res.status(403).json({ success: false, message: 'Only Admin or Author Can Delete' });
 
     await doc.deleteOne();
     await logActivity({ action: 'delete', doc, user: req.user });
@@ -134,7 +134,7 @@ export const regenerateSummary = async (req, res) => {
   try {
     const doc = await Doc.findById(req.params.id);
     if (!doc) return res.status(404).json({ success: false, message: 'Not found' });
-    if (!canEditOrDelete(req.user, doc)) return res.status(403).json({ success: false, message: 'Forbidden' });
+    if (!canEditOrDelete(req.user, doc)) return res.status(403).json({ success: false, message: 'Only Admin or Author Can Edit' });
 
     doc.summary = await summarizeText(doc.content);
     await doc.save();
@@ -150,7 +150,7 @@ export const regenerateTags = async (req, res) => {
   try {
     const doc = await Doc.findById(req.params.id);
     if (!doc) return res.status(404).json({ success: false, message: 'Not found' });
-    if (!canEditOrDelete(req.user, doc)) return res.status(403).json({ success: false, message: 'Forbidden' });
+    if (!canEditOrDelete(req.user, doc)) return res.status(403).json({ success: false, message: 'Only Admin or Author Can Edit' });
 
     doc.tags = await generateTags(doc.content);
     await doc.save();

@@ -18,6 +18,7 @@ app.use('/api/search', searchRoutes);
 app.use('/api/qa', qaRoutes);
 
 
+
 const PORT = process.env.PORT || 4000;
 connectDB(process.env.MONGO_URI).then(() => {
   app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));

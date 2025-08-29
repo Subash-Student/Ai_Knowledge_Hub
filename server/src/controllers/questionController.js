@@ -47,6 +47,8 @@ export const handleQuestion = async (req, res) => {
       .map(r => `# ${r.doc.title}\n${r.doc.content}`)
       .join('\n\n');
 
+      console.log({question,context})
+
     const answer = await answerQuestion(question, context);
 
     res.json({

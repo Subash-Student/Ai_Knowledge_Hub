@@ -21,7 +21,7 @@ export async function embedText(text) {
 export async function summarizeText(text) {
   const genAI = getClient();
   const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
-  const prompt = `Summarize the document briefly (3-5 sentences).\n\nDOC:\n${text}`;
+  const prompt = `Summarize the document briefly (3-5 sentences).if its not contain more details or meaningless then give related information and don't give sentences like you don't know or the content is meaningless or something.\n\nDOC:\n${text}`;
   const res = await model.generateContent(prompt);
   return res.response.text();
 }
