@@ -18,16 +18,22 @@ function cosine(a, b) {
 export const textSearch = async (req, res) => {
   try {
     const { q } = req.query;
-    if (!q) return res.json([]);
+    if (!q || typeof q !== 'string' || q.trim() === '') {
+      return res.status(400).json({ success: false, message: 'Query is required' });
+    }
+
     const docs = await Doc.find(
       { $text: { $search: q } },
       { score: { $meta: 'textScore' } }
     )
       .sort({ score: { $meta: 'textScore' } })
-      .limit(20);
-    res.json(docs);
+      .limit(20)
+      .lean();
+
+    res.json({ success: true, data: docs });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    console.error('Error in textSearch:', err);
+    res.status(500).json({ success: false, message: err.message });
   }
 };
 
@@ -35,21 +41,29 @@ export const textSearch = async (req, res) => {
 export const semanticSearch = async (req, res) => {
   try {
     const { q } = req.query;
-    if (!q) return res.json([]);
+    if (!q || typeof q !== 'string' || q.trim() === '') {
+      return res.status(400).json({ success: false, message: 'Query is required' });
+    }
+
     const qEmb = await embedText(q);
     const docs = await Doc.find(
       {},
       'title content tags summary embedding createdBy updatedAt'
-    ).populate('createdBy', 'name');
+    )
+      .populate('createdBy', 'name')
+      .lean();
+
     const scored = docs
-      .map(d => ({
-        doc: d,
-        score: cosine(qEmb, d.embedding || [])
+      .map(doc => ({
+        ...doc,
+        semanticScore: parseFloat(cosine(qEmb, doc.embedding || []).toFixed(4)),
       }))
-      .sort((a, b) => b.score - a.score)
+      .sort((a, b) => b.semanticScore - a.semanticScore)
       .slice(0, 20);
-    res.json(scored.map(s => ({ ...s.doc.toObject(), semanticScore: s.score })));
+
+    res.json({ success: true, data: scored });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    console.error('Error in semanticSearch:', err);
+    res.status(500).json({ success: false, message: err.message });
   }
 };
