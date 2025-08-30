@@ -50,7 +50,18 @@ export default function AddEditDoc() {
     }
   };
 
-  // ...
+  const deleteDoc = async () => {
+    if (!window.confirm("Are you sure you want to delete this document? This action cannot be undone.")) {
+      return;
+    }
+    try {
+      await api(`/api/docs/${id}`, { method: "DELETE" });
+      toast.success("Document deleted successfully!");
+      navigate("/");
+    } catch (err) {
+      toast.error(err.message || "Failed to delete document");
+    }
+  };
 
   const summarizeDoc = async () => {
     try {
@@ -61,7 +72,7 @@ export default function AddEditDoc() {
       toast.info(err.message || "Failed to summarize");
     }
   };
-  
+
   const tagsGen = async () => {
     try {
       const res = await api(`/api/docs/${id}/tags`, { method: "POST" });
@@ -71,9 +82,6 @@ export default function AddEditDoc() {
       toast.info(err.message || "Failed to generate tags");
     }
   };
-
-// ...
-
 
   return (
     <div className="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-8 mt-10">
@@ -96,7 +104,6 @@ export default function AddEditDoc() {
           onChange={(e) => setContent(e.target.value)}
           required
         />
-
         <div>
           {/* Tags Field */}
           <input
@@ -115,11 +122,10 @@ export default function AddEditDoc() {
             Generate Tags
           </button>
         </div>
-
         <div>
           {/* Summarize Field */}
           <textarea
-          rows={8}
+            rows={8}
             className="border p-2 rounded w-full"
             placeholder="Summary"
             value={summary}
@@ -135,7 +141,6 @@ export default function AddEditDoc() {
             Generate Summary
           </button>
         </div>
-
         <div className="flex gap-3 justify-end">
           <button
             type="submit"
@@ -144,6 +149,15 @@ export default function AddEditDoc() {
           >
             {saving ? "Saving..." : isNew ? "Create" : "Save"}
           </button>
+          {!isNew && (
+            <button
+              type="button"
+              onClick={deleteDoc}
+              className="bg-red-600 text-white py-2 px-4 rounded hover:bg-red-700"
+            >
+              Delete
+            </button>
+          )}
           <button
             type="button"
             onClick={() => navigate(-1)}
