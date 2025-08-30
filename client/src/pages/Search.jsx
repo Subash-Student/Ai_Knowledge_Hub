@@ -8,7 +8,7 @@ export default function Search() {
   const [tab, setTab] = useState("text");
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [submitted, setSubmitted] = useState(false); // Track if search was triggered
+  const [submitted, setSubmitted] = useState(false);
 
   const go = async () => {
     if (!q.trim()) return toast.warning("Enter a query first");
@@ -29,7 +29,7 @@ export default function Search() {
     <div className="max-w-4xl mx-auto mt-10 space-y-6">
       <h2 className="text-3xl font-bold text-center">🔍 Search Documents</h2>
 
-      {/* Search Input */}
+   
       <div className="flex flex-col sm:flex-row gap-4">
         <input
           value={q}
@@ -45,7 +45,7 @@ export default function Search() {
         </button>
       </div>
 
-      {/* Tabs */}
+     
       <div className="flex gap-2 justify-center">
         <button
           onClick={() => setTab("text")}
@@ -69,7 +69,7 @@ export default function Search() {
         </button>
       </div>
 
-      {/* Results */}
+     
       {loading ? (
         <div className="space-y-4">
           {[1, 2, 3].map((i) => (

@@ -5,12 +5,12 @@ import DocCard from "../components/DocCard";
 import ActivityFeed from "../components/ActivityFeed";
 import Skeleton from "../components/Skeleton";
 import { toast } from "react-toastify";
-import { AuthContext } from "../context/AuthContext"; // Adjust path if needed
+import { AuthContext } from "../context/AuthContext"; 
 
 export default function Dashboard() {
   const [docs, setDocs] = useState([]);
-  const [query, setQuery] = useState(""); // input value
-  const [tag, setTag] = useState("");     // actual filter
+  const [query, setQuery] = useState(""); 
+  const [tag, setTag] = useState("");    
   const [loading, setLoading] = useState(true);
   const [activity, setActivity] = useState([]);
   const { user } = useContext(AuthContext);
@@ -52,16 +52,16 @@ export default function Dashboard() {
     const isOwner = myId && createdById && myId === createdById;
   
     if (isAdmin || isOwner) {
-      navigate(`/docs/${doc._id}`); // editable page
+      navigate(`/docs/${doc._id}`); 
     } else {
-      navigate(`/docs/${doc._id}/view`); // read-only page
+      navigate(`/docs/${doc._id}/view`); 
     }
   };
   
 
   return (
     <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-8 mt-10">
-      {/* Left Panel */}
+      
       <div>
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold">📄 Documents</h2>
@@ -73,7 +73,7 @@ export default function Dashboard() {
           </Link>
         </div>
 
-        {/* Search Filter */}
+      
         <div className="flex gap-3 mb-6">
           <input
             className="border p-2 rounded w-full max-w-xs"
@@ -98,7 +98,7 @@ export default function Dashboard() {
           </button>
         </div>
 
-        {/* Document List */}
+       
         {loading ? (
           <div className="space-y-4">
             {[1, 2, 3].map((i) => (
@@ -122,7 +122,7 @@ export default function Dashboard() {
         )}
       </div>
 
-      {/* Right Panel */}
+   
       <div>
         <h3 className="text-lg font-semibold mb-4">🕒 Recent Activity</h3>
         {loading ? (

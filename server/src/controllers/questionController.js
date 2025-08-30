@@ -32,7 +32,7 @@ export const handleQuestion = async (req, res) => {
       });
     }
 
-    // Fetch the specific document by ID with necessary fields
+   
     const doc = await Doc.findById(docId, 'title content embedding').lean();
     if (!doc) {
       return res.status(404).json({
@@ -41,21 +41,21 @@ export const handleQuestion = async (req, res) => {
       });
     }
 
-    // Embed the question text
+   
     const qEmb = await embedText(question);
 
-    // Calculate cosine similarity score between question embedding and doc embedding (optional here, but keeping workflow)
+    
     const score = cosine(qEmb, doc.embedding || []);
 
-    // Compose context from this single chosen doc
+   
     const context = `# ${doc.title}\n${doc.content}`;
 
     console.log({ question, context, score });
 
-    // Get answer from AI service
+    
     const answer = await answerQuestion(question, context);
 
-    // Return response tailored for frontend
+    
     res.json({
       success: true,
       answer,
