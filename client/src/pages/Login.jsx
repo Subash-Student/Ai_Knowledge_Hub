@@ -6,12 +6,14 @@ import { AuthContext } from "../context/AuthContext";
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
   const { login } = useContext(AuthContext);
 
   const submit = async (e) => {
     e.preventDefault();
+    setErrorMessage("");
+
     try {
       const res = await api("/api/auth/login", {
         method: "POST",
@@ -19,8 +21,8 @@ export default function Login() {
       });
       login(res.token, res.user);
       navigate("/");
-    } catch {
-      setError("Invalid credentials");
+    } catch (err) {
+      setErrorMessage(err?.message || "Login failed");
     }
   };
 
@@ -45,8 +47,13 @@ export default function Login() {
         <button className="bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700">
           Login
         </button>
-        {error && <p className="text-red-500 text-sm">{error}</p>}
+
+        {/* Show single error message */}
+        {errorMessage && (
+          <p className="text-red-500 text-sm mt-2">{errorMessage}</p>
+        )}
       </form>
+
       <p className="text-sm mt-3 text-center">
         No account?{" "}
         <Link to="/register" className="text-indigo-600">

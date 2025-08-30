@@ -45,7 +45,10 @@ export default function AddEditDoc() {
         await api(`/api/docs/${id}`, { method: "PUT", body: JSON.stringify(body) });
       }
       navigate("/");
-    } finally {
+    } catch (err) {
+      toast.error(err?.message || "Validation Failed");
+    }
+    finally {
       setSaving(false);
     }
   };
