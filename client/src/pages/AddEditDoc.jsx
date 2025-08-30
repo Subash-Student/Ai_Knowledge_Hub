@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { api } from "../api";
+import { toast } from "react-toastify";
 
 export default function AddEditDoc() {
   const { id } = useParams();
@@ -8,6 +9,7 @@ export default function AddEditDoc() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [tags, setTags] = useState("");
+  const [summary, setSummary] = useState("");
   const [versions, setVersions] = useState([]);
   const [saving, setSaving] = useState(false);
   const navigate = useNavigate();
@@ -19,6 +21,7 @@ export default function AddEditDoc() {
         setTitle(d.data.title);
         setContent(d.data.content);
         setTags((d.data.tags || []).join(", "));
+        setSummary(d.data.summary || "");
         const v = await api(`/api/docs/${id}/versions`);
         setVersions(v.data);
       }
@@ -33,6 +36,7 @@ export default function AddEditDoc() {
       title,
       content,
       tags: tags.split(",").map((t) => t.trim()).filter(Boolean),
+      summary,
     };
     try {
       if (isNew) {
@@ -45,6 +49,31 @@ export default function AddEditDoc() {
       setSaving(false);
     }
   };
+
+  // ...
+
+  const summarizeDoc = async () => {
+    try {
+      const res = await api(`/api/docs/${id}/summarize`, { method: "POST" });
+      setSummary(res.summary || "");
+      toast.success("Summary generated!");
+    } catch (err) {
+      toast.info(err.message || "Failed to summarize");
+    }
+  };
+  
+  const tagsGen = async () => {
+    try {
+      const res = await api(`/api/docs/${id}/tags`, { method: "POST" });
+      setTags((res.tags || []).join(", "));
+      toast.success("Tags generated!");
+    } catch (err) {
+      toast.info(err.message || "Failed to generate tags");
+    }
+  };
+
+// ...
+
 
   return (
     <div className="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-8 mt-10">
@@ -67,12 +96,46 @@ export default function AddEditDoc() {
           onChange={(e) => setContent(e.target.value)}
           required
         />
-        <input
-          className="border p-2 rounded"
-          placeholder="Tags (comma separated)"
-          value={tags}
-          onChange={(e) => setTags(e.target.value)}
-        />
+
+        <div>
+          {/* Tags Field */}
+          <input
+            className="border p-2 rounded w-full"
+            placeholder="Tags (comma separated)"
+            value={tags}
+            onChange={(e) => setTags(e.target.value)}
+            disabled={isNew}
+          />
+          <button
+            type="button"
+            onClick={tagsGen}
+            disabled={isNew}
+            className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mt-2"
+          >
+            Generate Tags
+          </button>
+        </div>
+
+        <div>
+          {/* Summarize Field */}
+          <textarea
+          rows={8}
+            className="border p-2 rounded w-full"
+            placeholder="Summary"
+            value={summary}
+            onChange={(e) => setSummary(e.target.value)}
+            disabled={isNew}
+          />
+          <button
+            type="button"
+            onClick={summarizeDoc}
+            disabled={isNew}
+            className="bg-indigo-500 text-white px-4 py-2 rounded hover:bg-indigo-600 mt-2"
+          >
+            Generate Summary
+          </button>
+        </div>
+
         <div className="flex gap-3 justify-end">
           <button
             type="submit"

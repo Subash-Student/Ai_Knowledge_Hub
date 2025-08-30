@@ -32,26 +32,6 @@ export default function Dashboard() {
     load();
   }, [tag]);
 
-  const summarize = async (id) => {
-    try {
-      await api(`/api/docs/${id}/summarize`, { method: "POST" });
-      toast.success("Summary generated!");
-      load();
-    } catch {
-      toast.error("Failed to summarize");
-    }
-  };
-
-  const tagsGen = async (id) => {
-    try {
-      await api(`/api/docs/${id}/tags`, { method: "POST" });
-      toast.success("Tags generated!");
-      load();
-    } catch {
-      toast.error("Failed to generate tags");
-    }
-  };
-
   return (
     <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-8 mt-10">
       {/* Left Panel */}
@@ -109,8 +89,6 @@ export default function Dashboard() {
                 key={d._id}
                 doc={d}
                 onOpen={() => navigate(`/docs/${d._id}`)}
-                onSummarize={() => summarize(d._id)}
-                onTags={() => tagsGen(d._id)}
               />
             ))}
           </div>
