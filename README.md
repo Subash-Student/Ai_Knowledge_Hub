@@ -40,7 +40,7 @@ cd Ai_Knowledge_Hub
 2. Configure Environment
 - Copy `.env.example` to `.env` inside the **server/** and **client/** folder:
 ```bash
-The env.example file contails the original values of frontend and backend env values use it for test.
+The env.example file contains the original values of frontend and backend env values use it for test.
 ```
 - 
 3. Start Backend
