@@ -4,21 +4,24 @@ import { setToken as saveToken, getToken } from "../api";
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(localStorage.getItem("user"));
   const [token, setToken] = useState(getToken());
 
+  // Run once on mount
   useEffect(() => {
-    if (token && !user) {
+    if (token) {
       const stored = localStorage.getItem("user");
-      if (stored) setUser(JSON.parse(stored));
+      if (stored) {
+        setUser(JSON.parse(stored));
+      }
     }
-  }, [token, user]);
+  }, []); 
 
   const login = (jwt, userData) => {
     setToken(jwt);
     saveToken(jwt);
     setUser(userData);
-    localStorage.setItem("user", JSON.stringify(userData));
+    localStorage.setItem("user", JSON.stringify(userData)); 
   };
 
   const logout = () => {

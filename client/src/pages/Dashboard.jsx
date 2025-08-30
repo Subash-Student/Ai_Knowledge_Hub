@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { api } from "../api";
 import DocCard from "../components/DocCard";
 import ActivityFeed from "../components/ActivityFeed";
 import Skeleton from "../components/Skeleton";
 import { toast } from "react-toastify";
+import { AuthContext } from "../context/AuthContext"; // Adjust path if needed
 
 export default function Dashboard() {
   const [docs, setDocs] = useState([]);
@@ -12,6 +13,7 @@ export default function Dashboard() {
   const [tag, setTag] = useState("");     // actual filter
   const [loading, setLoading] = useState(true);
   const [activity, setActivity] = useState([]);
+  const { user } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const load = async () => {
@@ -31,6 +33,31 @@ export default function Dashboard() {
   useEffect(() => {
     load();
   }, [tag]);
+
+  const getId = (idOrObj) => {
+    if (!idOrObj) return null;
+    if (typeof idOrObj === "string") return idOrObj;
+    if (typeof idOrObj === "object" && idOrObj._id) return idOrObj._id.toString();
+    if (typeof idOrObj === "object" && idOrObj.toString) return idOrObj.toString();
+    return null;
+  };
+  
+  const handleOpen = (doc) => {
+    const myId = getId(user?.id);
+    const isAdmin = user?.role === "admin";
+    const createdById = getId(doc.createdBy);
+  
+    console.log("Comparing userId and createdById:", myId, createdById);
+  
+    const isOwner = myId && createdById && myId === createdById;
+  
+    if (isAdmin || isOwner) {
+      navigate(`/docs/${doc._id}`); // editable page
+    } else {
+      navigate(`/docs/${doc._id}/view`); // read-only page
+    }
+  };
+  
 
   return (
     <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-8 mt-10">
@@ -88,7 +115,7 @@ export default function Dashboard() {
               <DocCard
                 key={d._id}
                 doc={d}
-                onOpen={() => navigate(`/docs/${d._id}`)}
+                onOpen={() => handleOpen(d)}
               />
             ))}
           </div>

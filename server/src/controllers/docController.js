@@ -68,14 +68,18 @@ export const getDocs = async (req, res) => {
 // Read one document
 export const getDoc = async (req, res) => {
   try {
-    const doc = await Doc.findById(req.params.id);
+    const doc = await Doc.findById(req.params.id)
+      .populate('createdBy', 'name role');  // <-- populate creator's name and role
+
     if (!doc) return res.status(404).json({ success: false, message: 'Not found' });
+
     res.json({ success: true, data: doc });
   } catch (err) {
     console.error('Error in getDoc:', err);
     res.status(500).json({ success: false, message: err.message });
   }
 };
+
 
 // Update document
 export const updateDoc = async (req, res) => {

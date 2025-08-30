@@ -7,6 +7,7 @@ import AddEditDoc from "./pages/AddEditDoc";
 import Search from "./pages/Search";
 import TeamQA from "./pages/TeamQA";
 import { AuthContext } from "./context/AuthContext";
+import DocView from "./components/DocView";
 
 const Header = () => {
   const { user, logout } = useContext(AuthContext);
@@ -56,6 +57,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Protected><Dashboard /></Protected>} />
           <Route path="/docs/new" element={<Protected><AddEditDoc /></Protected>} />
+          <Route path="/docs/:id/view" element={<Protected><DocView /></Protected>} />
           <Route path="/docs/:id" element={<Protected><AddEditDoc /></Protected>} />
           <Route path="/search" element={<Protected><Search /></Protected>} />
           <Route path="/qa" element={<Protected><TeamQA /></Protected>} />
