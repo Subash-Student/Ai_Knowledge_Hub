@@ -35,8 +35,8 @@ export default function AddEditDoc() {
     const body = {
       title,
       content,
-      tags: tags.split(",").map((t) => t.trim()).filter(Boolean),
-      summary,
+      tags: isNew ? [] : tags.split(",").map((t) => t.trim()).filter(Boolean),
+      summary: isNew ? "" : summary,
     };
     try {
       if (isNew) {
@@ -104,43 +104,50 @@ export default function AddEditDoc() {
           onChange={(e) => setContent(e.target.value)}
           required
         />
-        <div>
-          {/* Tags Field */}
-          <input
-            className="border p-2 rounded w-full"
-            placeholder="Tags (comma separated)"
-            value={tags}
-            onChange={(e) => setTags(e.target.value)}
-            disabled={isNew}
-          />
-          <button
-            type="button"
-            onClick={tagsGen}
-            disabled={isNew}
-            className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mt-2"
-          >
-            Generate Tags
-          </button>
-        </div>
-        <div>
-          {/* Summarize Field */}
-          <textarea
-            rows={8}
-            className="border p-2 rounded w-full"
-            placeholder="Summary"
-            value={summary}
-            onChange={(e) => setSummary(e.target.value)}
-            disabled={isNew}
-          />
-          <button
-            type="button"
-            onClick={summarizeDoc}
-            disabled={isNew}
-            className="bg-indigo-500 text-white px-4 py-2 rounded hover:bg-indigo-600 mt-2"
-          >
-            Generate Summary
-          </button>
-        </div>
+
+        {!isNew && (
+          <>
+            <div>
+              {/* Tags Field */}
+              <input
+                className="border p-2 rounded w-full"
+                placeholder="Tags (comma separated)"
+                value={tags}
+                onChange={(e) => setTags(e.target.value)}
+                disabled={isNew}
+              />
+              <button
+                type="button"
+                onClick={tagsGen}
+                disabled={isNew}
+                className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mt-2"
+              >
+                Generate Tags
+              </button>
+            </div>
+
+            <div>
+              {/* Summarize Field */}
+              <textarea
+                rows={8}
+                className="border p-2 rounded w-full"
+                placeholder="Summary"
+                value={summary}
+                onChange={(e) => setSummary(e.target.value)}
+                disabled={isNew}
+              />
+              <button
+                type="button"
+                onClick={summarizeDoc}
+                disabled={isNew}
+                className="bg-indigo-500 text-white px-4 py-2 rounded hover:bg-indigo-600 mt-2"
+              >
+                Generate Summary
+              </button>
+            </div>
+          </>
+        )}
+
         <div className="flex gap-3 justify-end">
           <button
             type="submit"
@@ -149,6 +156,7 @@ export default function AddEditDoc() {
           >
             {saving ? "Saving..." : isNew ? "Create" : "Save"}
           </button>
+
           {!isNew && (
             <button
               type="button"
@@ -158,6 +166,7 @@ export default function AddEditDoc() {
               Delete
             </button>
           )}
+
           <button
             type="button"
             onClick={() => navigate(-1)}

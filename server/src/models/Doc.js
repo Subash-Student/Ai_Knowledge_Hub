@@ -11,4 +11,8 @@ const docSchema = new mongoose.Schema({
 
 docSchema.index({ title: 'text', content: 'text' });
 
+
+
+
+
 export default mongoose.model('Doc', docSchema);

@@ -3,6 +3,7 @@ import Version from '../models/Version.js';
 import Activity from '../models/Activity.js';
 import { summarizeText, generateTags, embedText } from '../services/gemini.js';
 
+
 // Helper: Check if user can edit/delete
 const canEditOrDelete = (user, doc) => {
   return doc.createdBy.toString() === user._id.toString() || user.role === 'admin';
@@ -189,3 +190,13 @@ export const getLatestActivities = async (req, res) => {
     res.status(500).json({ success: false, message: err.message });
   }
 };
+
+
+(async () => {
+  try {
+    await Doc.init(); // This creates indexes defined in schema if absent
+    console.log("Text index on Doc collection ensured");
+  } catch (err) {
+    console.error("Failed to create text indexes on Doc:", err);
+  }
+})();
