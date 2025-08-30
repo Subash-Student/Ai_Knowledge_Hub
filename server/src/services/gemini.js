@@ -37,7 +37,7 @@ export async function generateTags(text) {
 
 export async function answerQuestion(question, context) {
   const genAI = getClient();
-  const model = genAI.getGenerativeModel({ model: 'gemini-1.5-pro' });
+  const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
   const prompt = `You are a helpful assistant answering questions using ONLY the provided context from team documents.
 If the answer isn't in the context, say you don't have enough information.
 Return concise, factual answers.

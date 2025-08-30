@@ -1,7 +1,7 @@
 import Doc from '../models/Doc.js';
 import { embedText, answerQuestion } from '../services/gemini.js';
 
-// Cosine similarity function
+// Cosine similarity helper remains unchanged
 function cosine(a, b) {
   const len = Math.min(a.length, b.length);
   let dot = 0, na = 0, nb = 0;
@@ -14,10 +14,10 @@ function cosine(a, b) {
   return dot / denom;
 }
 
-// Controller for answering questions
 export const handleQuestion = async (req, res) => {
   try {
-    const { question } = req.body;
+    const { question, docId } = req.body;
+
     if (!question || typeof question !== 'string' || question.trim() === '') {
       return res.status(400).json({
         success: false,
@@ -25,40 +25,47 @@ export const handleQuestion = async (req, res) => {
       });
     }
 
-    const qEmb = await embedText(question);
-    const docs = await Doc.find({}, 'title content embedding').lean();
-
-    if (!docs.length) {
-      return res.status(404).json({
+    if (!docId) {
+      return res.status(400).json({
         success: false,
-        message: 'No documents available for context',
+        message: 'Document ID is required',
       });
     }
 
-    const ranked = docs
-      .map(doc => ({
-        doc,
-        score: cosine(qEmb, doc.embedding || []),
-      }))
-      .sort((a, b) => b.score - a.score)
-      .slice(0, 5);
+    // Fetch the specific document by ID with necessary fields
+    const doc = await Doc.findById(docId, 'title content embedding').lean();
+    if (!doc) {
+      return res.status(404).json({
+        success: false,
+        message: 'Document not found',
+      });
+    }
 
-    const context = ranked
-      .map(r => `# ${r.doc.title}\n${r.doc.content}`)
-      .join('\n\n');
+    // Embed the question text
+    const qEmb = await embedText(question);
 
-      console.log({question,context})
+    // Calculate cosine similarity score between question embedding and doc embedding (optional here, but keeping workflow)
+    const score = cosine(qEmb, doc.embedding || []);
 
+    // Compose context from this single chosen doc
+    const context = `# ${doc.title}\n${doc.content}`;
+
+    console.log({ question, context, score });
+
+    // Get answer from AI service
     const answer = await answerQuestion(question, context);
 
+    // Return response tailored for frontend
     res.json({
       success: true,
       answer,
-      sources: ranked.map(r => ({
-        id: r.doc._id,
-        title: r.doc.title,
-        score: parseFloat(r.score.toFixed(4)),
-      })),
+      sources: [
+        {
+          id: doc._id,
+          title: doc.title,
+          score: parseFloat(score.toFixed(4)),
+        },
+      ],
     });
   } catch (err) {
     console.error('Error in handleQuestion:', err);
