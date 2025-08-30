@@ -1,30 +1,10 @@
-# Node dependencies
-client/node_modules/
-server/node_modules/
+# Ignore node_modules anywhere
+**/node_modules/
 
-# Build output
-client/dist/
-server/dist/
-client/.vite/
-server/.vite/
+# Ignore all .env files
+**/.env
 
-# Environment files
-client/.env*
-server/.env*
-
-# Logs
-**/npm-debug.log*
-
-# OS files
-**/.DS_Store
-**/Thumbs.db
-
-# IDE configs
-**/.vscode/
-**/.idea/
-**/*.sublime-project
-**/*.sublime-workspace
-
-# Misc caches
-**/.cache/
-**/.parcel-cache/
+# Optional: other common ignores
+.DS_Store
+dist/
+build/
